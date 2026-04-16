@@ -1,0 +1,480 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background: #f5f7fb;
+}
+
+/* LOGIN & REGISTRASI */
+.auth-page {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #e3f2fd, #ffffff);
+}
+
+.login-container {
+    background: #ffffff;
+    padding: 40px;
+    width: 480px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 18px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #555;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    padding-right: 40px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: 0.2s;
+}
+
+.form-group input:focus {
+    border-color: #64b5f6;
+    box-shadow: 0 0 5px rgba(100,181,246,0.5);
+}
+
+.btn-login {
+    width: 100%;
+    padding: 10px;
+    background: #64b5f6;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-login:hover {
+    background: #42a5f5;
+}
+
+.register-text {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 13px;
+    color: #555;
+}
+
+.register-text a {
+    color: #64b5f6;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.register-text a:hover {
+    text-decoration: underline;
+}
+
+.divider { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    margin: 1.25rem 0; 
+}
+
+.divider span { 
+    font-size: 12px; 
+    color: #b0b8cc; 
+    white-space: nowrap; }
+  
+.divider::before, .divider::after { 
+    content: ''; 
+    flex: 1; 
+    height: 1px; 
+    background: #edf0f7; 
+}
+
+.toggle-pw { 
+    position: absolute; 
+    right: 10px; 
+    top: 70%; 
+    transform: translateY(-50%); 
+    background: none; 
+    border: none; 
+    cursor: pointer;
+    padding: 4px; 
+    display: flex; 
+    color: #b0b8cc; }
+
+.toggle-pw:hover { 
+    color: #6b7280; 
+}
+
+/* HEADER */
+.site-header {
+    border-bottom: 1px solid #dee2e6;
+    background: #ffffff;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 0 20px;
+}
+
+.main-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+}
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.main-navbar_list {
+    list-style-type: none;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.main-navbar_link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    color: #555;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.main-navbar_link:hover {
+    background: #f5f7fb;
+    color: #64b5f6;
+}
+
+.main-navbar_link.active {
+    color: #64b5f6;
+    background: #e3f2fd;
+    font-weight: 600;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-icon {
+    width: 24px; 
+    transform: translateY(2px);
+    transition: transform 0.2s;
+}
+
+.dropdown-menu {
+    list-style-type: none;
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 110%;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    min-width: 120px;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 10px;
+    color: #555;
+    text-decoration: none;
+}
+
+.dropdown-menu a:hover {
+    background: #f5f7fb;
+    border-radius: 6px;
+}
+
+.dropdown.is-active .dropdown-menu {
+    display: block;
+}
+
+/* DAFTAR HARGA */
+.studio-section {
+    max-width: 900px;
+    margin: 40px auto;
+    border: 1px solid #c3e6ff;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+.studio-section_header {
+    background: #c3e6ff;
+    color: #333;
+    padding: 14px 20px;
+    font-weight: 600;
+}
+
+.studio-grid {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.studio-card {
+    border: 1px solid #e3f2fd;
+    border-radius: 10px;
+    padding: 18px;
+    background: #fff;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.studio-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(100,181,246,0.15);
+    border-color: #64b5f6;
+}
+
+.studio-card_title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.studio-card_price {
+    font-size: 14px;
+    color: #64b5f6;
+    font-weight: 500;
+}
+
+/* DAFTAR BOOKING */
+.booking-section {
+    max-width: 1100px;
+    margin: 40px auto;
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.booking-header h2 {
+    color: #333;
+}
+
+.btn-booking {
+    padding: 8px 16px;
+    border: 1px solid #64b5f6;
+    border-radius: 6px;
+    color: #64b5f6;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.btn-booking:hover {
+    background: #64b5f6;
+    color: white;
+}
+
+.booking-table-wrapper {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.booking-table {
+    text-align: center;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.booking-table thead {
+    background: #f0f4f8;
+}
+
+.booking-table th {
+    padding: 12px;
+    font-size: 14px;
+    color: #333;
+}
+
+.booking-table td {
+    padding: 12px;
+    font-size: 14px;
+    color: #555;
+    border-top: 1px solid #eee;
+}
+
+.booking-table tbody tr:hover {
+    background: #f9fbff;
+}
+
+.status {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.status.menunggu {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.status.dibayar {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.status.selesai {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.status.kedaluwarsa {
+    background: #F3F4F6;
+    color: #4B5563;
+}
+
+.btn-action {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    text-decoration: none;
+    margin-right: 5px;
+    transition: 0.2s;
+    background: transparent;
+    cursor: pointer;
+}
+
+.btn-action.bayar {
+    border: 1px solid #64b5f6;
+    color: #64b5f6;
+}
+
+.btn-action.bayar:hover {
+    background: #64b5f6;
+    color: white;
+}
+
+.btn-action.batal {
+    border: 1px solid #e57373;
+    color: #e57373;
+}
+
+.btn-action.batal:hover {
+    background: #e57373;
+    color: white;
+}
+
+.btn-action.selesai {
+    border: 1px solid #81c784;
+    color: #2e7d32;
+}
+
+.btn-action.selesai:hover {
+    background: #81c784;
+    color: white;
+}
+
+/* FORM BOOKING */
+.booking-form-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.booking-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.booking-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-select {
+    width: 100%;
+    padding: 10px 35px 10px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: #fff url("../img/arrow-down.png") no-repeat right 10px center;
+    background-size: 18px;
+}   
+
+.input-group {
+    display: flex;
+}
+
+.input-group input {
+    border-radius: 8px 0 0 8px;
+}
+
+.input-group span {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    background: #f0f4f8;
+    border: 1px solid #ccc;
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+}
+
+.input-group-left span {
+    border-radius: 8px 0 0 8px;
+    border: 1px solid #ccc;
+    background: #f0f4f8;
+}
+
+.input-group-left input {
+    border-radius: 0 8px 8px 0;
+    border-left: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+}
+
+.form-action {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
