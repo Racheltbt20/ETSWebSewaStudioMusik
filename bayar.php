@@ -14,7 +14,8 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
     exit;
 }
 
-$id = $_POST["id"];
+$id = (int)$_POST["id"];
+$page = isset($_POST['page']) ? (int)$_POST['page'] : 1;
 
 $booking = query("SELECT t.*, s.tipe_studio 
                   FROM transaksi t 
@@ -24,15 +25,13 @@ $durasi = (strtotime($booking["jam_selesai"]) - strtotime($booking["jam_mulai"])
 
 if(isset($_POST['submit'])) {
     if( bayar($_POST) > 0 ) {
-        echo "<script>
-                alert('Pembayaran Berhasil!'); 
-                document.location.href = 'daftarbooking.php';
-              </script>";
+        $_SESSION["success"] = "Pembayaran berhasil!";
+        header("Location: daftarbooking.php?page=$page");
+        exit;
     } else {
-        echo "<script>
-                alert('Pembayaran gagal!'); 
-                document.location.href = 'bayar.php?id=$id'
-              </script>";
+        $_SESSION["error"] = "Jumlah bayar kurang dari total harga!";
+        header("Location: daftarbooking.php");
+        exit;
     }
 }
 
@@ -43,68 +42,82 @@ if(isset($_POST['submit'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
-    <title>Bayar Sewa Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Pembayaran</title>
 </head>
-<body>
+<body class="bg-slate-100 min-h-screen">
 
     <!-- NAVBAR HEADER -->
     <?php include 'templates/navheader.php'; ?>
 
-    <!-- FORM PEMBAYARAN -->
-    <div class="booking-section">
-        <a href="daftarbooking.php" class="btn-booking" style="display:inline-block; margin-bottom:20px;">
-            Kembali
+    <div class="max-w-4xl mx-auto px-6 py-8">
+        <a href="daftarbooking.php"
+           class="inline-block mb-6 text-sm border border-slate-300 text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-lg transition">
+            &larr; Kembali
         </a>
-        <div class="booking-form-container">
-            <form action="" method="post" class="booking-form">
-                <div class="booking-col">
-                    <input type="hidden" name="id" value="<?= $booking['id']; ?>">
-                    <div class="form-group">
-                        <label for="nama">Nama</label>
-                        <input type="text" name="nama" id="nama" value="<?= $booking["nama"]; ?>" readonly>
+        <!-- FORM -->
+        <div class="bg-white rounded-2xl shadow-sm p-8">
+            <h2 class="text-xl font-bold text-slate-800 mb-6">Pembayaran</h2>
+            <form action="" method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input type="hidden" name="page" value="<?= $page ?>">
+                <input type="hidden" name="id" value="<?= $booking['id']; ?>">
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-slate-600">Nama</label>
+                        <input type="text" value="<?= $booking['nama']; ?>" readonly
+                               class="border border-slate-200 bg-slate-50 rounded-lg px-3 py-2 text-sm text-slate-500 cursor-not-allowed">
                     </div>
-                    <div class="form-group">
-                        <label for="studio_id">Tipe Studio</label>
-                        <input type="text" name="studio_id" id="studio_id" value="<?= $booking["tipe_studio"]; ?>" readonly>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-slate-600">Tipe Studio</label>
+                        <input type="text" value="<?= $booking['tipe_studio']; ?>" readonly
+                               class="border border-slate-200 bg-slate-50 rounded-lg px-3 py-2 text-sm text-slate-500 cursor-not-allowed">
                     </div>
-                    <div class="form-group">
-                        <label for="durasi">Durasi</label>
-                        <div class="input-group">
-                            <input type="number" name="durasi" id="durasi" value="<?= $durasi; ?>" readonly>
-                            <span>Jam</span>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-slate-600">Durasi</label>
+                        <div class="flex items-center border border-slate-200 bg-slate-50 rounded-lg overflow-hidden">
+                            <input type="number" value="<?= $durasi; ?>" readonly
+                                   class="px-3 py-2 text-sm text-slate-500 bg-slate-50 focus:outline-none w-full cursor-not-allowed">
+                            <span class="text-sm text-slate-400 bg-slate-100 border-l border-slate-200 px-3 py-2 shrink-0">Jam</span>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="tanggal">Tanggal</label>
-                        <input type="text" name="tanggal" id="tanggal" value="<?= date('d-m-Y', strtotime($booking['tanggal'])); ?>" readonly>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-slate-600">Tanggal</label>
+                        <input type="text" value="<?= date('d-m-Y', strtotime($booking['tanggal'])); ?>" readonly
+                               class="border border-slate-200 bg-slate-50 rounded-lg px-3 py-2 text-sm text-slate-500 cursor-not-allowed">
                     </div>
                 </div>
-                <div class="booking-col">
-                    <div class="form-group">
-                        <label for="total_harga">Total harga</label>
-                        <div class="input-group input-group-left">
-                            <span>Rp.</span>
-                            <input type="text" name="total_harga" id="total_harga" value="<?= $booking["total_harga"]; ?>" readonly>
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-slate-600">Total Harga</label>
+                        <div class="flex items-center border border-slate-200 bg-slate-50 rounded-lg overflow-hidden">
+                            <span class="text-sm text-slate-400 bg-slate-100 border-r border-slate-200 px-3 py-2 shrink-0">Rp</span>
+                            <input type="text" name="total_harga" id="total_harga" value="<?= $booking['total_harga']; ?>" readonly
+                                   class="px-3 py-2 text-sm text-slate-500 bg-slate-50 focus:outline-none w-full cursor-not-allowed">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="total_bayar">Total bayar</label>
-                        <div class="input-group input-group-left">
-                            <span>Rp.</span>
-                            <input type="number" name="total_bayar" id="total_bayar" min="<?= $booking["total_harga"]; ?>" required>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-slate-600">Total Bayar</label>
+                        <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
+                            <span class="text-sm text-slate-500 bg-slate-50 border-r border-slate-300 px-3 py-2 shrink-0">Rp</span>
+                            <input type="number" name="total_bayar" id="total_bayar" min="<?= $booking['total_harga']; ?>" required
+                                   class="px-3 py-2 text-sm focus:outline-none w-full">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="kembalian">Kembalian: </label>
-                        <div class="input-group input-group-left">
-                            <span>Rp.</span>
-                            <input type="number" name="kembalian" id="kembalian" readonly>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm font-medium text-slate-600">Kembalian</label>
+                        <div class="flex items-center border border-slate-200 bg-slate-50 rounded-lg overflow-hidden">
+                            <span class="text-sm text-slate-400 bg-slate-100 border-r border-slate-200 px-3 py-2 shrink-0">Rp</span>
+                            <input type="number" name="kembalian" id="kembalian" readonly
+                                   class="px-3 py-2 text-sm text-slate-500 bg-slate-50 focus:outline-none w-full cursor-not-allowed">
                         </div>
                     </div>
-                    <div class="form-action">
-                        <button type="reset" class="btn-action batal">Reset</button>
-                        <button type="submit" name="submit" class="btn-action selesai" style="width:auto; padding:8px 20px;">
+                    <div class="flex items-center gap-3 mt-auto">
+                        <button type="reset"
+                                class="border border-slate-400 text-slate-600 hover:bg-slate-400 hover:text-white text-sm font-medium px-5 py-2 rounded-lg transition">
+                            Reset
+                        </button>
+                        <button type="submit" name="submit"
+                                class="border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white text-sm font-medium px-5 py-2 rounded-lg transition">
                             Simpan
                         </button>
                     </div>
@@ -112,7 +125,7 @@ if(isset($_POST['submit'])) {
             </form>
         </div>
     </div>
-
+    
     <!-- JS -->
     <script src="js/script.js"></script>
 </body>

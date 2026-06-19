@@ -10,20 +10,20 @@ if(!isset($_SESSION["login"])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] != "POST") {
-    header("Location: daftarbooking.php");
+    header("Location: studio.php");
     exit;
 }
 
 $id = (int)$_POST["id"];
 $page = isset($_POST['page']) ? (int)$_POST['page'] : 1;
 
-if(selesai($id) > 0) {
-    $_SESSION["success"] = "Booking berhasil diselesaikan!";
+if(hapusStudio($id) > 0) {
+    $_SESSION["success"] = "Studio berhasil dihapus!";
 } else {
-    $_SESSION["error"] = "Booking gagal diselesaikan!";
+    $_SESSION["error"] = "Studio gagal dihapus!";
 }
 
-header("Location: daftarbooking.php?page=$page");
+header("Location: studio.php?page=$page");
 exit;
 
 ?>

@@ -9,14 +9,28 @@ if(!isset($_SESSION["login"])) {
     exit;
 }
 
+if ($_SERVER["REQUEST_METHOD"] != "POST") {
+    header("Location: daftarbooking.php");
+    exit;
+}
+
+$id = isset($_POST["id"]) ? (int)$_POST["id"] : 0;
+$booking_data = query("SELECT * FROM transaksi WHERE id = $id");
+if(empty($booking_data)) {
+    header("Location: daftarbooking.php");
+    exit;
+}
+$booking = $booking_data[0];
+
 $tipe_studio = query("SELECT * FROM studio ORDER BY harga ASC");
+
 $errors = [];
 $old = [];
 $jadwal_error = '';
 
 if(isset($_POST["submit"])) {
     $old = $_POST;
-    $result = tambahBooking($_POST);
+    $result = editBooking($_POST);
     if(is_array($result) && !empty($result)) {
         $errors = $result;
         if(isset($errors["jadwal"])) {
@@ -24,7 +38,11 @@ if(isset($_POST["submit"])) {
             unset($errors["jadwal"]);
         }
     } else if($result > 0) {
-        $_SESSION["success"] = "Booking berhasil dibuat!";
+        $_SESSION["success"] = "Booking berhasil diubah!";
+        header("Location: daftarbooking.php");
+        exit;
+    } else if($result === 0) {
+        $_SESSION["success"] = "Tidak ada perubahan data.";
         header("Location: daftarbooking.php");
         exit;
     }
@@ -40,11 +58,11 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Tambah Booking</title>
+    <title>Edit Booking</title>
 </head>
 <body class="bg-slate-100 min-h-screen">
 
-    <!-- NAVBAR -->
+    <!-- NAVBAR HEADER -->
     <?php include 'templates/navheader.php'; ?>
 
     <div class="max-w-4xl mx-auto px-6 py-8">
@@ -54,13 +72,14 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         </a>
         <!-- FORM -->
         <div class="bg-white rounded-2xl shadow-sm p-8">
-            <h2 class="text-xl font-bold text-slate-800 mb-6">Tambah Booking</h2>
-            <form action="" id="booking-form" method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <h2 class="text-xl font-bold text-slate-800 mb-6">Edit Booking</h2>
+            <form action="" method="post" id="booking-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input type="hidden" name="id" value="<?= $booking['id']; ?>">
                 <div class="flex flex-col gap-4">
                     <div class="flex flex-col gap-1">
                         <label for="nama" class="text-sm font-medium text-slate-600">Nama</label>
-                        <input type="text" name="nama" id="nama" placeholder="Nama Pelanggan"
-                               value="<?= htmlspecialchars($old['nama'] ?? '') ?>"
+                        <input type="text" name="nama" id="nama"
+                               value="<?= htmlspecialchars(!empty($old['nama']) ? $old['nama'] : $booking['nama']) ?>"
                                class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2
                                       <?= isset($errors['nama']) ? 'border-red-400 focus:ring-red-400' : 'border-slate-300 focus:ring-blue-500' ?>">
                         <?php if(isset($errors['nama'])) : ?>
@@ -69,8 +88,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                     </div>
                     <div class="flex flex-col gap-1">
                         <label for="telepon" class="text-sm font-medium text-slate-600">Telepon</label>
-                        <input type="text" name="telepon" id="telepon" placeholder="Nomor Telepon"
-                               value="<?= htmlspecialchars($old['telepon'] ?? '') ?>"
+                        <input type="text" name="telepon" id="telepon"
+                               value="<?= htmlspecialchars(!empty($old['telepon']) ? $old['telepon'] : $booking['telepon']) ?>"
                                class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2
                                       <?= isset($errors['telepon']) ? 'border-red-400 focus:ring-red-400' : 'border-slate-300 focus:ring-blue-500' ?>">
                         <?php if(isset($errors['telepon'])) : ?>
@@ -83,15 +102,15 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                             <select name="studio_id" id="studio_id"
                                     class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 appearance-none bg-white cursor-pointer w-full pr-8
                                            <?= isset($errors['studio_id']) ? 'border-red-400 focus:ring-red-400' : 'border-slate-300 focus:ring-blue-500' ?>">
-                                <option value="" disabled <?= empty($old['studio_id']) ? 'selected' : '' ?>>Pilih Studio</option>
                                 <?php foreach($tipe_studio as $studio) : ?>
-                                    <option value="<?= $studio["id"]; ?>" <?= (isset($old['studio_id']) && $old['studio_id'] == $studio['id']) ? 'selected' : '' ?>>
-                                        <?= $studio["tipe_studio"]; ?> | Rp. <?= number_format($studio["harga"], 0, ',', '.') ?>
+                                    <option value="<?= $studio['id']; ?>"
+                                        <?= (isset($old['studio_id']) ? $old['studio_id'] == $studio['id'] : $booking['studio_id'] == $studio['id']) ? 'selected' : '' ?>>
+                                        <?= $studio['tipe_studio']; ?> | Rp. <?= number_format($studio['harga'], 0, ',', '.') ?>
                                     </option>
                                 <?php endforeach ?>
                             </select>
                             <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                                <img src="img/arrow-down.png" alt="" class="w-6 h-6 opacity-80">
+                                <img src="img/arrow-down.png" alt="" class="w-4 h-4 opacity-60">
                             </span>
                         </div>
                         <?php if(isset($errors['studio_id'])) : ?>
@@ -101,7 +120,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                     <div class="flex flex-col gap-1">
                         <label for="tanggal" class="text-sm font-medium text-slate-600">Tanggal</label>
                         <input type="date" name="tanggal" id="tanggal"
-                               value="<?= $old['tanggal'] ?? '' ?>"
+                               value="<?= !empty($old['tanggal']) ? $old['tanggal'] : $booking['tanggal'] ?>"
                                class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2
                                       <?= isset($errors['tanggal']) ? 'border-red-400 focus:ring-red-400' : 'border-slate-300 focus:ring-blue-500' ?>">
                         <?php if(isset($errors['tanggal'])) : ?>
@@ -113,7 +132,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                     <div class="flex flex-col gap-1">
                         <label for="jam_mulai" class="text-sm font-medium text-slate-600">Jam Mulai</label>
                         <input type="time" name="jam_mulai" id="jam_mulai"
-                               value="<?= $old['jam_mulai'] ?? '' ?>"
+                               value="<?= !empty($old['jam_mulai']) ? $old['jam_mulai'] : substr($booking['jam_mulai'], 0, 5) ?>"
                                class="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2
                                       <?= isset($errors['jam_mulai']) ? 'border-red-400 focus:ring-red-400' : 'border-slate-300 focus:ring-blue-500' ?>">
                         <?php if(isset($errors['jam_mulai'])) : ?>
@@ -124,8 +143,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                         <label for="durasi" class="text-sm font-medium text-slate-600">Durasi</label>
                         <div class="flex items-center border rounded-lg overflow-hidden focus-within:ring-2
                                     <?= isset($errors['durasi']) ? 'border-red-400 focus-within:ring-red-400' : 'border-slate-300 focus-within:ring-blue-500' ?>">
-                            <input type="number" name="durasi" id="durasi" min="1" placeholder="Durasi"
-                                   value="<?= $old['durasi'] ?? '' ?>"
+                            <input type="number" name="durasi" id="durasi" min="1"
+                                   value="<?= !empty($old['durasi']) ? $old['durasi'] : (strtotime($booking['jam_selesai']) - strtotime($booking['jam_mulai'])) / 3600 ?>"
                                    class="px-3 py-2 text-sm focus:outline-none w-full">
                             <span class="text-sm text-slate-500 bg-slate-50 border-l border-slate-300 px-3 py-2 shrink-0">Jam</span>
                         </div>

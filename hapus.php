@@ -14,18 +14,25 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
     exit;
 }
 
-$id = $_POST["id"];
+$id = (int)$_POST["id"];
+$status = $_POST["status"];
+$page = isset($_POST['page']) ? (int)$_POST['page'] : 1;
 
-if(hapus($id) > 0) {
-    echo "<script>
-            alert('Data Berhasil Dihapus!'); 
-            document.location.href = 'daftarbooking.php';
-          </script>";
+if(hapusBooking($id) > 0) {
+    if($status === 'menunggu') {
+        $_SESSION["success"] = "Booking berhasil dibatalkan!";
+    } else {
+        $_SESSION["success"] = "Booking berhasil dihapus!";
+    }
 } else {
-    echo "<script>
-            alert('Data Gagal Dihapus!'); 
-            document.location.href = 'daftarbooking.php';
-         </script>";
+    if($status === 'menunggu') {
+        $_SESSION["error"] = "Booking gagal dibatalkan!";
+    } else {
+        $_SESSION["error"] = "Booking gagal dihapus!";
+    }
 }
+
+header("Location: daftarbooking.php?page=$page");
+exit;
 
 ?>
